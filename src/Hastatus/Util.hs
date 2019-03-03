@@ -32,3 +32,7 @@ noopConduit = c
                     c
 
                 Nothing -> return ()
+
+-- | Alias to noopConduit
+noopC :: Monad m => ConduitT i i m ()
+noopC = noopConduit

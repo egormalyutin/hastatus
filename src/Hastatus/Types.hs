@@ -4,7 +4,7 @@ import Control.Monad.Trans
 import Control.Monad.Trans.Writer.Lazy
 import Control.Monad.Reader.Class
 import Control.Monad
-import Conduit
+import Conduit hiding ((=$))
 
 import Control.Concurrent hiding (yield)
 import Control.Concurrent.MVar
@@ -37,9 +37,9 @@ infixr 9 =$, =$$
 (=$) :: Formatter -> Status a -> Status a
 (=$) f = censor $ map (.|f)
 
--- | Group Outputs to one Output and apply Formatter on them
-(=$$) :: Formatter -> Status a -> Status a
-(=$$) f = censor $ \inputs -> return $ do
+-- | Group Outputs from Status to Status with one Output
+group :: Status a -> Status a
+group = censor $ \inputs -> return $ do
     res <- liftIO . newMVar $ Just ""
 
     liftIO . forkIO $ do
@@ -85,3 +85,6 @@ infixr 9 =$, =$$
 
     r
 
+-- | Group Outputs form Status to Status with one Output and apply Formatter on it
+(=$$) :: Formatter -> Status a -> Status a
+f =$$ s = f =$ (group s)

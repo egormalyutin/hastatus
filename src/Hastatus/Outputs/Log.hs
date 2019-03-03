@@ -1,6 +1,18 @@
 -- | This module contains formatters and utilities to render Status to stdout.
 
 module Hastatus.Outputs.Log
+    ( logStatus
+    , Color(..)
+    , Style(..)
+    , color
+    , bgColor
+    , style
+    ) where
+
+import Hastatus.Types
+import Hastatus.Util
+
+import Conduit
 
 import qualified System.Console.Pretty as P
 
@@ -27,3 +39,26 @@ toPrettyColor c = case c of
 
 -- | Styles for formatters
 data Style = Normal | Bold | Faint | Italic | Underline | SlowBlink | ColoredNormal | Reverse deriving (Show, Read)
+
+toPrettyStyle :: Style -> P.Style
+toPrettyStyle c = case c of
+    Normal        -> P.Normal
+    Bold          -> P.Bold
+    Faint         -> P.Faint
+    Italic        -> P.Italic
+    Underline     -> P.Underline
+    SlowBlink     -> P.SlowBlink
+    ColoredNormal -> P.ColoredNormal
+    Reverse       -> P.Reverse
+
+-- | Colorize Status
+color :: Color -> Formatter
+color c = mapC $ P.color $ toPrettyColor c
+
+-- | Add background to Status
+bgColor :: Color -> Formatter
+bgColor c = mapC $ P.bgColor $ toPrettyColor c
+
+-- | Add style to Status
+style :: Style -> Formatter
+style s = mapC $ P.style $ toPrettyStyle s

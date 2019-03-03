@@ -1,6 +1,7 @@
 module Main where
 
 import Hastatus
+import Hastatus.Outputs.Log
 import Control.Concurrent hiding (yield)
 
 stupid :: Widget
@@ -12,13 +13,13 @@ stupid = widget $ do
     c 0
 
 form :: Formatter
-form = noopConduit
+form = noopC
 
 main :: IO ()
 main = do
     logStatus $ do
         stupid
-        form =$$ do
-            form =$ stupid
-            form =$ form =$ stupid
+        style Underline =$$ do
+            color Red =$ stupid
+            stupid
 
